@@ -4,10 +4,8 @@ Indiana University, Spring 2026
 
 In this course we learn how to write mechanized proofs in Agda of
 theorems about programming languages. The course will use the online
-textbook
-
-[Programming Language Foundations in Agda](https://plfa.github.io/)
-(PLFA)
+textbook [Programming Language Foundations in Agda](https://plfa.github.io/)
+(PLFA).
 
 [Agda](https://agda.readthedocs.io/en/latest/index.html) is a proof
 assistant and a dependently typed language.  No prior knowledge of
