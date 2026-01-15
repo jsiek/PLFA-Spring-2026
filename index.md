@@ -123,9 +123,6 @@ Tuesday and Thursday at 2:20-3:35pm in Wylie Hall (WY) Room 101.
 	include a list of the formal artifacts (definitions, theorems)
 	that you plan to turn in.
 
-11. Do the `denot-plusᶜ` and `denot-church`
-    in [Denotational](https://plfa.github.io/Denotational/).
-
 ## Project
 
 Choose a language feature that is not spelled out in PLFA to formalize
@@ -227,11 +224,4 @@ Ideas for project language features:
 |          | 23  | [SystemF](./SystemF.lagda.md) Universal Types (aka. parametric polymorphism), [Recording](https://iu.mediaspace.kaltura.com/media/Lecture+April+29A+System+F+%26+Parametric+Polymorphism/1_3warcwd3) |
 |          | 28  | TBD
 |          | 30  | TBD
-
-## Resources
-
-* The PLFA mailing list [plfa-interest](http://lists.inf.ed.ac.uk/mailman/listinfo/plfa-interest)
-  and ask questions!
-
-* [Crash Course on Notation in Programming Language Theory](http://siek.blogspot.com/2012/07/crash-course-on-notation-in-programming.html)
 
