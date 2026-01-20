@@ -15,15 +15,22 @@ open import lecture-notes-Relations
 It has one constructor named `refl` that says anything is equal to
 itself.
 
+infix 4 _≡_
+data _≡_ {a} {A : Set a} (x : A) : A → Set a where
+  refl : x ≡ x
+
 ## `≡` is an equivalence relation and a congruence
 
 ```
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans; cong)
 ```
 
-Example of `refl`:
+Examples of `refl`:
 
 ```
+0≡0 : 0 ≡ 0
+0≡0 = refl
+
 0≡0+0 : 0 ≡ 0 + 0
 0≡0+0 = refl
 ```
