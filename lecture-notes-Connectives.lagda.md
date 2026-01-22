@@ -64,7 +64,7 @@ _ : P → (⊤ → P)
 _ = λ p → λ tt → p
 ```
 
-## Conjunction
+## Logical And (Conjunction)
 
 Logical "and" is the pair type, written `P × Q`.
 
@@ -73,6 +73,7 @@ one for `P` and the other for `Q`.
 
 It has two eliminators (accessors) `proj₁` and `proj₂`,
 that return the proofs of `P` and of `Q`, respectively.
+Alternatively, you can use pattern matching to eliminate pairs.
 
 ```
 open import Data.Product using (_×_; proj₁; proj₂) renaming (_,_ to ⟨_,_⟩)
@@ -81,9 +82,31 @@ _ : P × Q → Q × P
 _ = λ pq → ⟨ proj₂ pq , proj₁ pq ⟩
 ```
 
-## Disjunction
+Here are a few proofs involving conjunction and implication
+(that is, programs involving pairs and functions).
 
-Logical "or" is the disjoint union type, written `P ⊎ Q`.
+```
+_ : (P × Q → R) → (Q → P → R)
+_ = λ pq→r q p → pq→r ⟨ p , q ⟩
+
+_ : (P → Q) × (Q → R) → (P → R)
+_ = λ { ⟨ p→q , q→r ⟩ p →
+      let q = p→q p in
+      q→r q
+      }
+
+_ : ((P → Q → R) × (P → Q) × P) → R
+_ = λ { ⟨ p→q→r , ⟨ p→q , p ⟩ ⟩ →
+       let q→r = p→q→r p in
+       let q = p→q p in
+       q→r q
+       }
+```
+
+
+## Logical Or (Disjunction)
+
+Logical "or" is the disjoint union type, written `P ⊎ Q` (aka. the Sum type).
 
 It has two constructors, `inl` and `inr` that take one parameter.
 
@@ -147,6 +170,11 @@ _ = refl
 
 _ : P → (¬ P) → ⊥
 _ = λ p ¬p → ¬p p
+
+open import Relation.Nullary.Negation using (contradiction)
+
+_ : P → (¬ P) → ⊥
+_ = λ p ¬p → contradiction p ¬p
 ```
 
 
