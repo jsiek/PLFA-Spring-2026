@@ -29,12 +29,19 @@ theorems about these functions.  We shall study some examples that use
 some of these functions and theorems.
 
 Consider the operation that rotates the elements of a list to the left
-by `k` positions, with wrap-around. For example,
+by `k` positions, with wrap-around. For example, the following rotates
+by two positions to the left.
 
-    rotate (1 ∷ 2 ∷ 3 ∷ []) 2 ≡ (3 ∷ 1 ∷ 2 ∷ [])
+    rotate (1 ∷ 2 ∷ 3 ∷ 4 ∷ []) 2 ≡ (3 ∷ 4 ∷ 1 ∷ 2 ∷ [])
 
 One clever way to rotate a list is to split it into two parts, reverse
-each part, append them, and then reverse again.
+each part, append them, and then reverse again. For example, breaking
+down the above example rotation into these steps:
+
+    splitAt 2 (1 ∷ 2 ∷ 3 ∷ 4 ∷ []) ≡ ⟨ 1 ∷ 2 ∷ [] , 3 ∷ 4 ∷ [] ⟩
+    reverse (1 ∷ 2 ∷ []) ≡ (2 ∷ 1 ∷ [])
+    reverse (3 ∷ 4 ∷ []) ≡ (4 ∷ 3 ∷ [])
+    reverse (2 ∷ 1 ∷ 4 ∷ 3 ∷ []) ≡ 3 ∷ 4 ∷ 1 ∷ 2 ∷ []
 
 ```
 open import Data.List using (reverse; splitAt; _++_)
@@ -51,13 +58,16 @@ rotate xs k
 Here are a few examples of `rotate` in action.
 
 ```
-_ : rotate (1 ∷ 2 ∷ 3 ∷ []) 1 ≡ (2 ∷ 3 ∷ 1 ∷ [])
+_ : rotate (1 ∷ 2 ∷ 3 ∷ 4 ∷ []) 1 ≡ (2 ∷ 3 ∷ 4 ∷ 1 ∷ [])
 _ = refl
 
-_ : rotate (1 ∷ 2 ∷ 3 ∷ []) 2 ≡ (3 ∷ 1 ∷ 2 ∷ [])
+_ : rotate (1 ∷ 2 ∷ 3 ∷ 4 ∷ []) 2 ≡ (3 ∷ 4 ∷ 1 ∷ 2 ∷ [])
 _ = refl
 
-_ : rotate (1 ∷ 2 ∷ 3 ∷ []) 3 ≡ (1 ∷ 2 ∷ 3 ∷ [])
+_ : rotate (1 ∷ 2 ∷ 3 ∷ 4 ∷ []) 3 ≡ (4 ∷ 1 ∷ 2 ∷ 3 ∷ [])
+_ = refl
+
+_ : rotate (1 ∷ 2 ∷ 3 ∷ 4 ∷ []) 4 ≡ (1 ∷ 2 ∷ 3 ∷ 4 ∷ [])
 _ = refl
 ```
 
@@ -69,8 +79,11 @@ back, swapping places with the `d , e`.
     rotate ([ a , b , c ] ++ [ d , e ]) 3
           ≡ [ d , e ] ++ [ a , b , c ]
 
-With this view in mind, we prove that `rotate` is correct using some
-equations from the Agda standard library about `reverse` and `append`.
+With this view in mind, we can prove that `rotate` is correct using the
+following two equations from the Agda standard library about `reverse` and `append`.
+
+    reverse-++ : ∀ xs ys → reverse (xs ++ ys) ≡ reverse ys ++ reverse xs
+    reverse-involutive : ∀ xs → reverse (reverse xs) ≡ xs
 
 ```
 open import Data.List.Properties using (reverse-++; reverse-involutive)
