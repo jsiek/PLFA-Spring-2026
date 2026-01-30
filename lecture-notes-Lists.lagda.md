@@ -49,10 +49,7 @@ open import Data.List using (reverse; splitAt; _++_)
 rotate : ∀ {A : Set} → List A → ℕ → List A
 rotate xs k
     with splitAt k xs
-... | ⟨ ls , rs ⟩ =
-    let ls' = reverse ls in
-    let rs' = reverse rs in
-    reverse (ls' ++ rs')
+... | ⟨ ls , rs ⟩ = reverse (reverse ls ++ reverse rs)
 ```
 
 Here are a few examples of `rotate` in action.
