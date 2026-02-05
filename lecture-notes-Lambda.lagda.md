@@ -455,7 +455,7 @@ canonical form.
 canonical : ∀ {V A}
   → ∅ ⊢ V ⦂ A
   → Value V
-    -----------
+    ---------------
   → Canonical V ⦂ A
 canonical (⊢` ())          ()
 canonical (⊢ƛ ⊢N)          V-ƛ         =  C-ƛ ⊢N

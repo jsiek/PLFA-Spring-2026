@@ -27,7 +27,7 @@ Tuesday and Thursday at 2:20-3:35pm in Wylie Hall (WY) Room 101.
 ## Office Hours (in Luddy Hall 3016 or the neighboring 3014)
 
 * Mondays 2-3pm
-* Fridays 2-3pm
+* Fridays 1:30-2:30pm
 
 
 ## Assignments (tentative)
