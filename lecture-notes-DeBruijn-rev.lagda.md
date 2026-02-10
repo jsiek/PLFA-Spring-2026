@@ -18,18 +18,19 @@ open import Relation.Binary.PropositionalEquality
 ## Intro
 
 ```
-open import lecture-notes-Lambda using (Term; ƛ_⇒_; _·_; `_; _⊢_⦂_; ⊢ƛ; ⊢`; ∅; _⇒_)
+module Intro where
+  open import lecture-notes-Lambda using (Term; ƛ_⇒_; _·_; `_; _⊢_⦂_; ⊢ƛ; ⊢`; ∅; _⇒_)
                                  renaming (Z to here; S to there)
 
--- The Church encoding of two: λf. λx. f (f x)
-twoᶜ : Term
-twoᶜ = ƛ "f" ⇒ ƛ "x" ⇒ ` "f" · (` "f" · ` "x")
+  -- The Church encoding of two: λf. λx. f (f x)
+  twoᶜ : Term
+  twoᶜ = ƛ "f" ⇒ ƛ "x" ⇒ ` "f" · (` "f" · ` "x")
 
-⊢twoᶜ : ∀ {A} → ∅ ⊢ twoᶜ ⦂ (A ⇒ A) ⇒ A ⇒ A
-⊢twoᶜ = ⊢ƛ (⊢ƛ (⊢` ∋s · (⊢` ∋s · ⊢` ∋z)))
-  where
-  ∋s = there (λ ()) here
-  ∋z = here
+  ⊢twoᶜ : ∀ {A} → ∅ ⊢ twoᶜ ⦂ (A ⇒ A) ⇒ A ⇒ A
+  ⊢twoᶜ = ⊢ƛ (⊢ƛ (⊢` ∋f · (⊢` ∋f · ⊢` ∋x)))
+    where
+    ∋f = there (λ ()) here
+    ∋x = here
 ```
 
 The term and its typing derivation are in close correspondence:
@@ -112,6 +113,13 @@ data _⊢_ : Context → Type → Set where
   `zero : ∀ {Γ}
       ---------
     → Γ ⊢ `ℕ
+
+-- λf. λx. f (f x)
+_ : ∀ {A : Type} → ∅ ⊢ (A ⇒ A) ⇒ A ⇒ A
+_ = ƛ (ƛ ` ∋f · (` ∋f · ` ∋x))
+  where
+  ∋f = S Z
+  ∋x = Z
 ```
 
 ## Renaming
@@ -139,6 +147,10 @@ rename ρ (`zero)        =  `zero
 
 ## Simultaneous Substitution
 
+This definition of substitution works even with full beta.
+
+```
+{-
 +------------------------+
 |                        |<- σ
 |  λ------------+        |
@@ -155,10 +167,8 @@ x    σ(x)           x   σ′(x)
   where ⇑ increments each free variable by one, while leaving each bound variable unchanged
 
 exts(σ) = σ′
+-}
 
-This definition of substitution works even with full beta.
-
-```
 exts : ∀ {Γ Δ}
   → (∀ {A} →       Γ ∋ A →     Δ ⊢ A)
     ---------------------------------
