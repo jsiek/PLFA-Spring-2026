@@ -202,7 +202,7 @@ Ideas for project language features:
 | February | 3  | [Lambda](https://plfa.github.io/Lambda/) the Simply Typed Lambda Calculus | [link](./lecture-notes-Lambda.lagda.md)
 |          | 5 | [Properties](https://plfa.github.io/Properties/) such as type safety |
 |          | 10 | [DeBruijn](https://plfa.github.io/DeBruijn/) representation of variables |
-|          | 12 | [Substitution](./lecture-notes-Substitution.lagda.md) |
+|          | 12 | [Substitution](./lecture-notes-Substitution.lagda.md) Theorems |
 |          | 17 | [STLC Termination via Logical Relations](./STLC-Termination.lagda.md) |
 |          | 19 | [More](https://plfa.github.io/More/) constructs: numbers, let, products (pairs), sums, unit, empty, lists |
 |          | 24 | [Inference](https://plfa.github.io/Inference/) bidirectional type inference |
