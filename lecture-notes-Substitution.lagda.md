@@ -122,10 +122,9 @@ idʳ : ∀{Γ} → Γ →ʳ Γ
 idʳ x = x
 ```
 
-The following theorem says that applying `ext` to
-the identity renaming is just the identity.
-The theorem statement expands `ext idʳ`
-to `(Z •ʳ ⇑ʳ idʳ)` so that Agda will allow
+The following lemma is used to prove that applying an identity substitution is the identity.
+The lemma says that applying `ext` to the identity renaming is just the identity.
+The theorem statement expands `ext idʳ` to `(Z •ʳ ⇑ʳ idʳ)` so that Agda will allow
 this theorem as an automatic rewrite.
 
 ```
