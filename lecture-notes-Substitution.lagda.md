@@ -27,10 +27,14 @@ postulate
 
 # Substitution theorems
 
+Needed for proof of confluence.
+
     substitution : ∀{Γ}{A}{B}{C}
        (M : Γ , B , C ⊢ A) (N : Γ , B ⊢ C) (L : Γ ⊢ B)
       → M [ N ] [ L ] ≡ M 〔 L 〕 [ N [ L ] ]
     substitution {Γ}{A}{B}{C} M N L = refl
+
+Needed for type preservation for System F, and for logical relations proofs.
 
     exts-sub-cons : ∀{Γ}{Δ}{A}{B} (σ : Γ →ˢ Δ) (N : Γ , A ⊢ B) (V : Δ ⊢ A)
       → (subst (exts σ) N) [ V ] ≡ subst (V • σ) N
@@ -44,24 +48,23 @@ Think of a substitution σ as a stream of terms.
 
 The σ-calculus consists of the following operations on substitutions.
 
-    id           The stream:  0, 1, 2, 3, ...
-    ↑            The stream:  1, 2, 3, 4, ...
+    id           The stream:  ` 0, ` 1, ` 2, ` 3, ...
+    ↑            The stream:  ` 1, ` 2, ` 3, ` 4, ...
     (M • σ)      Cons a term M onto the front of the stream σ
     σ ⨟ τ        The stream:  subst τ (σ 0), subst τ (σ 1), subst τ (σ 2), ...
 
 The σ-calculus includes the following equations.
 
-    (sub-head)             (M • σ) Z ≡ M
-    (sub-tail)           ↑ ⨟ (M • σ) ≡ σ
-    (sub-η)          (σ Z) • (↑ ⨟ σ) ≡ σ
+    (sub-head)             (M • σ) Z ≡ M           (car (cons M σ)) = M
+    (sub-tail)           ↑ ⨟ (M • σ) ≡ σ           (cdr (cons M σ)) = σ
+    (sub-η)          (σ Z) • (↑ ⨟ σ) ≡ σ           (cons (car p) (cdr p)) = p
     (Z-shift)              (` Z) • ↑ ≡ id
     (sub-id)             subst id M  ≡ M
     (sub-sub)   subst τ (subst σ M)  ≡ subst (σ ⨟ τ) M
     (sub-id-left)             id ⨟ σ ≡ σ
     (sub-id-right)            σ ⨟ id ≡ σ
     (sub-assoc)          (σ ⨟ τ) ⨟ θ ≡ σ ⨟ (τ ⨟ θ)
-    (sub-dist)           (M • σ) ⨟ τ ≡ (⟪ τ ⟫ M) • (σ ⨟ τ)
-
+    (sub-dist)           (M • σ) ⨟ τ ≡ (subst τ M) • (σ ⨟ τ)
 
 # Types, contexts, and variables
 
@@ -135,7 +138,8 @@ old-ext ρ (S x)  =  S (ρ x)
 ```
 
 ```
-ext-equiv : ∀ {Γ Δ}{A}{B}(ρ : Γ →ʳ Δ) (x : Γ , A ∋ B) → ext ρ x ≡ old-ext ρ x
+ext-equiv : ∀ {Γ Δ}{A}{B}(ρ : Γ →ʳ Δ) (x : Γ , A ∋ B)
+  → ext ρ x ≡ old-ext ρ x
 ext-equiv ρ Z = refl
 ext-equiv ρ (S x) = refl
 ```
@@ -153,12 +157,12 @@ The theorem statement expands `ext idʳ` to `(Z •ʳ ⇑ʳ idʳ)` so that Agda 
 this theorem as an automatic rewrite.
 
 ```
-Z-•-⇑ʳ : ∀{Γ}{A}{B} → (Z •ʳ ⇑ʳ idʳ) ≡ idʳ{Γ , A}{B}
-Z-•-⇑ʳ {Γ}{A}{B} = extensionality G
+Z-shiftʳ : ∀{Γ}{A}{B} → (Z •ʳ ⇑ʳ idʳ) ≡ idʳ{Γ , A}{B}
+Z-shiftʳ {Γ}{A}{B} = extensionality G
   where G : (x : Γ , A ∋ B) → (Z •ʳ ⇑ʳ idʳ) x ≡ idʳ x
         G Z = refl
         G (S x) = refl
-{-# REWRITE Z-•-⇑ʳ #-}
+{-# REWRITE Z-shiftʳ #-}
 ```
 
 
@@ -231,7 +235,7 @@ id : ∀{Γ} → Γ →ˢ Γ
 id x = ` x
 ```
 
-The `↑` substitution is the stream 0, 1, 2, ...
+The `↑` substitution is the stream 1, 2, 3, ...
 
 ```
 ↑ : ∀{Γ A} → Γ →ˢ (Γ , A)
@@ -264,6 +268,22 @@ subst σ (L · M)        =  (subst σ L) · (subst σ M)
 subst σ (`zero)        =  `zero
 ```
 
+The next operator is sequencing (i.e. composition of) substitutions.
+We declare the operation abstract as a workaround of
+Agda's restrictions on what is allowed as a rewrite.
+
+```
+abstract
+  infixr 5 _⨟_
+  _⨟_ : ∀{Γ₁ Γ₂ Γ₃ : Context} → (Γ₁ →ˢ Γ₂) → (Γ₂ →ˢ Γ₃) → (Γ₁ →ˢ Γ₃)
+  (σ₁ ⨟ σ₂) = λ x → subst σ₂ (σ₁ x)
+
+  seqˢ-def : ∀{Γ₁ Γ₂ Γ₃ A} (σ₁ : Γ₁ →ˢ Γ₂) → (σ₂ : Γ₂ →ˢ Γ₃) (x : Γ₁ ∋ A)
+    → (σ₁ ⨟ σ₂) x ≡ subst σ₂ (σ₁ x)
+  seqˢ-def σ₁ σ₂ x = refl
+{-# REWRITE seqˢ-def #-}
+```
+
 We define substitution of a single term for the zero index within another term.
 
 ```
@@ -275,23 +295,7 @@ We also define substitution of a single term for the one index within another te
 
 ```
 _〔_〕 : ∀{Γ}{A}{B}{C} → (Γ , B , C ⊢ A) → (Γ ⊢ B) → (Γ , C ⊢ A)
-_〔_〕 N M = subst (exts (M • id)) N
-```
-
-The next operator is sequencing (i.e. composition of) substitutions.
-We declare the operation abstract as a workaround of
-Agda's restrictions on what is allowed as a rewrite.
-
-```
-abstract
-  infixr 5 _⨟_
-  _⨟_ : ∀{Γ₁ Γ₂ Γ₃ : Context} → (Γ₁ →ˢ Γ₂) → (Γ₂ →ˢ Γ₃) → (Γ₁ →ˢ Γ₃)
-  (σ₁ ⨟ σ₂) x = subst σ₂ (σ₁ x)
-
-  seqˢ-def : ∀{Γ₁ Γ₂ Γ₃ A} (σ₁ : Γ₁ →ˢ Γ₂) → (σ₂ : Γ₂ →ˢ Γ₃) (x : Γ₁ ∋ A)
-    → (σ₁ ⨟ σ₂) x ≡ subst σ₂ (σ₁ x)
-  seqˢ-def σ₁ σ₂ x = refl
-{-# REWRITE seqˢ-def #-}
+N 〔 M 〕 = subst (exts (M • id)) N
 ```
 
 We can convert a renaming to a substitution as follows.
@@ -307,8 +311,10 @@ I chose the order in which to prove the equations carefully so that the
 we can use REWRITE with the earlier equations to automate the
 equational reasoning in the later proofs.
 
-The equation (sub-head) follows immediately from the definition of •.
+The equation (sub-head) follows immediately from the definition of `•`.
 We don't need to register (sub-head) as a REWRITE because it is already automatic.
+If you're following this recipe for your own language, feel free to skip
+theorems like this one that are proved by `refl` alone.
 
 ```
 sub-head : ∀{Γ Δ}{A} (M : Δ ⊢ A) (σ : Γ →ˢ Δ)
@@ -317,21 +323,35 @@ sub-head M σ = refl
 ```
 
 Likewise, `sub-tail` follows from the definition of the operators ⨟, ↑, and •.
+The short version of the proof is just `refl`.
+For educational purposes, I've also written out all the steps.
 
 ```
 sub-tail : ∀{Γ Δ}{A B} (M : Δ ⊢ A) (σ : Γ →ˢ Δ)
   → (↑ ⨟ (M • σ)) ≡ σ{B}
-sub-tail M σ =
+sub-tail M σ = 
   -- short version: refl
   -- long version:
   begin
-    (↑ ⨟ (M • σ)) ≡⟨⟩
-    (λ x → subst (M • σ) (↑ x)) ≡⟨⟩
+    (↑ ⨟ (M • σ))                   ≡⟨⟩
+    (λ x → subst (M • σ) (↑ x))     ≡⟨⟩
     (λ x → subst (M • σ) (` (S x))) ≡⟨⟩
-    (λ x → (M • σ) (S x)) ≡⟨⟩
-    (λ x → σ x) ≡⟨⟩
+    (λ x → (M • σ) (S x))           ≡⟨⟩
+    (λ x → σ x)                     ≡⟨⟩
     σ
   ∎
+```
+
+To prove `sub-η` we do cases for zero and non-zero, again using the
+definitions of the operators ⨟, ↑, and •.
+
+```
+sub-η : ∀{Γ}{Δ}{A}{B} (σ : (Γ , A) →ˢ Δ)
+  → (σ Z) • (↑ ⨟ σ) ≡ σ{B}
+sub-η{Γ}{Δ}{A}{B} σ = extensionality G
+  where G : (x : Γ , A ∋ B) → (σ Z • (↑ ⨟ σ)) x ≡ σ x
+        G Z = refl
+        G (S x) = refl
 ```
 
 We start with `sub-dist`. The proof is by cases on zero and non-zero.
@@ -361,21 +381,74 @@ exts-ren{Γ}{Δ}{A}{B} ρ = extensionality Goal
 {-# REWRITE exts-ren #-}
 ```
 
-The above lemma is exactly what we need to prove that applying a renaming
-is the same as converting the renaming to a substitution, and applying that.
+The (Z-shift) equation is proved automaticaly using `exts-ren` and `Z-shiftʳ`.
+
+```
+Z-shift : ∀{Γ}{A}{B} → (` Z • ↑) ≡ id{Γ , A}{B}
+Z-shift {Γ}{A}{B} = 
+  -- short version: refl
+  -- human readable version:
+  begin
+    (` Z • ↑)             ≡⟨⟩
+    (` Z • ⇑ (ren idʳ))   ≡⟨⟩ -- exts-ren
+    ren ((Z •ʳ ⇑ʳ idʳ))   ≡⟨⟩ -- Z-shiftʳ
+    ren idʳ               ≡⟨⟩
+    id 
+  ∎
+```
+
+Applying an identity substitution is the identity.
+This proof also uses `exts-ren` and `Z-shiftʳ`.
+
+```
+sub-id : ∀ {Γ}{A} (M : Γ ⊢ A)
+  → subst id M ≡ M
+sub-id (` x) = refl
+sub-id {Γ}{A ⇒ B} (ƛ N) = 
+  -- short version: cong ƛ_ (sub-id N)
+  -- human readable version
+  let IH : subst id N ≡ N
+      IH = sub-id N in
+  begin
+    subst id (ƛ N)                   ≡⟨⟩ -- def subst
+    ƛ subst (exts id) N              ≡⟨⟩ -- def exts
+    ƛ subst ((` Z) • ⇑ id) N         ≡⟨⟩
+    ƛ subst ((` Z) • ⇑ (ren idʳ)) N  ≡⟨⟩ -- exts-ren
+    ƛ subst (ren (Z •ʳ ⇑ʳ idʳ)) N    ≡⟨⟩ -- Z-shiftʳ
+    ƛ subst (ren idʳ) N              ≡⟨⟩
+    ƛ subst id N                     ≡⟨ cong ƛ_ IH ⟩
+    ƛ N
+  ∎
+sub-id (L · M) = cong₂ _·_ (sub-id L) (sub-id M)
+sub-id `zero = refl
+{-# REWRITE sub-id #-}
+```
+```
+sub-id-left : ∀{Γ Δ}{A} → (σ : Γ →ˢ Δ)
+  → id ⨟ σ ≡ σ{A}
+sub-id-left σ = refl
+
+sub-id-right : ∀{Γ Δ}{A} → (σ : Γ →ˢ Δ)
+  → σ ⨟ id ≡ σ{A}
+sub-id-right σ = refl
+```
+
+Applying a renaming is the same as converting the renaming
+to a substitution, and applying that.
+This too is proved using the `exts-ren` lemma.
 
 ```
 rename-subst-ren : ∀{Γ}{Δ}{A} (ρ : Γ →ʳ Δ)(M : Γ ⊢ A)
    → rename ρ M ≡ subst (ren ρ) M
 rename-subst-ren ρ (` x) = refl
-rename-subst-ren ρ (ƛ N) =
+rename-subst-ren ρ (ƛ N) = 
   -- short version: cong ƛ_ (rename-subst-ren (ext ρ) N)
   -- human readable version:
   begin
-    rename ρ (ƛ N)                   ≡⟨⟩
+    rename ρ (ƛ N)                   ≡⟨⟩ -- def rename
     ƛ (rename (ext ρ) N)             ≡⟨ cong ƛ_ IH ⟩
     ƛ (subst (ren (ext ρ)) N)        ≡⟨⟩ -- exts-ren
-    ƛ (subst (exts (ren ρ)) N)       ≡⟨⟩
+    ƛ (subst (exts (ren ρ)) N)       ≡⟨⟩ -- def subst
     subst (ren ρ) (ƛ N)
   ∎
   where IH : rename (ext ρ) N ≡ subst (ren (ext ρ)) N
@@ -416,7 +489,7 @@ ext-ren-sub{Γ}{Δ}{Ψ}{A}{B} ρ τ = extensionality G
 ```
 
 Applying a renaming and then a subsutution is equivalent to applying their composition.
-The proof relies on `ext-ren-sub`.
+The proof relies on `ext-ren-sub` and `exts-ren`.
 
 ```
 ren-sub : ∀{Γ}{Δ}{Ψ}{A} (ρ : Γ →ʳ Δ) (τ : Δ →ˢ Ψ) (M : Γ ⊢ A)
@@ -457,7 +530,8 @@ sub-ren{A = A} σ ρ (ƛ N) =
   begin
     subst (ren ρ) (subst σ (ƛ N))                   ≡⟨⟩ -- def subst
     ƛ subst (exts (ren ρ)) (subst (exts σ) N)       ≡⟨ cong ƛ_ IH ⟩
-    ƛ subst ((exts σ) ⨟ ren (ext ρ)) N              ≡⟨⟩ -- hard part! (many steps)
+    ƛ subst ((exts σ) ⨟ ren (ext ρ)) N              ≡⟨⟩ -- exts-ren
+    ƛ subst ((exts σ) ⨟ exts (ren ρ)) N             ≡⟨⟩ -- hard part! (many steps)
     ƛ subst (exts (σ ⨟ ren ρ)) N                    ≡⟨⟩ -- def subst
     subst (σ ⨟ ren ρ) (ƛ N)
   ∎
@@ -491,50 +565,16 @@ sub-sub σ τ `zero = refl
 {-# REWRITE sub-sub #-}
 ```
 
-Applying an identity substitution is the identity.
+With (sub-sub) registered as a rewrite, the (sub-assoc)
+equation is now proved automatically.
 
 ```
-sub-id : ∀ {Γ}{A} (M : Γ ⊢ A)
-  → subst id M ≡ M
-sub-id (` x) = refl
-sub-id {Γ}{A ⇒ B} (ƛ N) = cong ƛ_ (sub-id N)
-sub-id (L · M) = cong₂ _·_ (sub-id L) (sub-id M)
-sub-id `zero = refl
-{-# REWRITE sub-id #-}
-```
-
-To prove `sub-η` we do cases for zero and non-zero.
-
-```
-sub-η : ∀{Γ}{Δ}{A}{B} (σ : (Γ , A) →ˢ Δ)
-  → (σ Z) • (↑ ⨟ σ) ≡ σ{B}
-sub-η{Γ}{Δ}{A}{B} σ = extensionality G
-  where G : (x : Γ , A ∋ B) → (σ Z • (↑ ⨟ σ)) x ≡ σ x
-        G Z = refl
-        G (S x) = refl
-```
-
-The equations we have already proved are
-enough to prove the next four equations.
-
-```
-Z-shift : ∀{Γ}{A}{B} → (` Z • ↑) ≡ id{Γ , A}{B}
-Z-shift {Γ}{A}{B} = refl
-
-sub-id-left : ∀{Γ Δ}{A} → (σ : Γ →ˢ Δ)
-  → id ⨟ σ ≡ σ{A}
-sub-id-left σ = refl
-
-sub-id-right : ∀{Γ Δ}{A} → (σ : Γ →ˢ Δ)
-  → σ ⨟ id ≡ σ{A}
-sub-id-right σ = refl
-
 sub-assoc : ∀{Γ}{Δ}{Ψ}{Θ}{A} (σ : Γ →ˢ Δ) (τ : Δ →ˢ Ψ) (θ : Ψ →ˢ Θ)
   → (σ ⨟ τ) ⨟ θ ≡ (σ ⨟ τ ⨟ θ){A}
 sub-assoc σ τ θ = refl
 ```
 
-We now come to the main event, the proofs of the `substitution` and `exts-sub-cons` theorems.
+We come to the main event, the proofs of the `substitution` and `exts-sub-cons` theorems.
 Both are automatic consequences of equations that we've already proved.
 
 ```
@@ -542,16 +582,23 @@ substitution : ∀{Γ}{A}{B}{C}
    (M : Γ , B , C ⊢ A) (N : Γ , B ⊢ C) (L : Γ ⊢ B)
   → M [ N ] [ L ] ≡ M 〔 L 〕 [ N [ L ] ]
 substitution {Γ}{A}{B}{C} M N L = refl
+```
 
+The `exts-sub-cons` theorem says that extending σ (so it does not touch variable 0),
+applying that to `N`, and then substituting `V` for 0, is the same as
+applying the substitution `V • σ` to `N`.
+
+```
 exts-sub-cons : ∀{Γ}{Δ}{A}{B} (σ : Γ →ˢ Δ) (N : Γ , A ⊢ B) (V : Δ ⊢ A)
   → (subst (exts σ) N) [ V ] ≡ subst (V • σ) N
 exts-sub-cons {Γ} σ N V = refl
 ```
 
-
-**Exercise:** write down detailed proofs of the hard parts of `sub-ren` and `sub-sub`:
+**Exercise:** (recommended) write down a detailed proof of the hard part of `sub-ren`:
 
     (exts σ) ⨟ ren (ext ρ)  ≡  exts (σ ⨟ ren ρ)
+
+**Exercise:** (stretch) write down a detailed proof of the hard part of `sub-sub`:
 
            exts σ ⨟ exts τ  ≡ exts (σ ⨟ τ)
 
