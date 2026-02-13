@@ -164,7 +164,7 @@ data Natural : ∅ ⊢ `ℕ → Set where
 𝒱ℕ→Nat {`zero} wtv = Nat-Z
 ```
 
-### Compatibility lemmas about reduction
+### Compatibility lemma about reduction
 
 ```
 app-compat : ∀{A}{B} {L L'  : ∅ ⊢ A ⇒ B}{M M' : ∅ ⊢ A}
