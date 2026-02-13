@@ -1,7 +1,7 @@
 ```
 {-# OPTIONS --rewriting #-}
 
-module STLC-Termination-2 where
+module STLC-Termination where
 ```
 
 # A proof that all STLC programs terminate
@@ -19,7 +19,6 @@ open import Data.Product using (_×_; Σ; Σ-syntax; ∃; ∃-syntax; proj₁; p
 open import Data.Unit using (⊤; tt)
 open import Relation.Binary.PropositionalEquality
  using (_≡_; refl; sym; cong; cong₂)
---open Relation.Binary.PropositionalEquality.≡-Reasoning
 
 open import lecture-notes-Substitution
 ```
