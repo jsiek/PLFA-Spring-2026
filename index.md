@@ -213,12 +213,11 @@ Ideas for project language features:
 |          | 31  | [Gradual Guarantee for GTLC](./gradual-guarantee.md) |
 |          |  2  | [Gradual Guarantee for GTLC](./gradual-guarantee.md), cont'd |
 | April    |  7  | [Information-flow Control and Noninterference](./lecture-notes-IFC.lagda.md) | [link](./lecture-notes-IFC.lagda.md) |
-|          |  9  | [Denotational](https://plfa.github.io/Denotational/) semantics of the Lambda Calculus, [Recording](https://iu.mediaspace.kaltura.com/media/Lecture+March+30%2C+Denotational+Semantics/1_da4xq013)  |
-|          | 14  | [Compositional](https://plfa.github.io/Compositional/)  |
-|          | 16  | [Soundness](https://plfa.github.io/Soundness/), [Recording](https://iu.mediaspace.kaltura.com/media/Lecture+April+6%2C+Soundness+of+reduction+with+respect+to+denotational+semantics/1_o5gwttt7) |
-|          | 21  | [Adequacy](https://plfa.github.io/Adequacy/), [Recording](https://iu.mediaspace.kaltura.com/media/Lecture+April+8%2C+Adequacy+of+Denotational+Semantics+with+respect+to+Operational+Semantics/1_1eoqorgy) |
-|          | 21  | [ContextualEquivalence](https://plfa.github.io/ContextualEquivalence/) and [ScottNumeralsPlus](./ScottNumeralsPlus.lagda.md), [Recording](https://iu.mediaspace.kaltura.com/media/Lecture+April+13%2C+Contextual+Equivalence%2C+Addition+of+Scott+Numerals/1_xidyzfa5)|
-|          | 23  | [Unification](./Unification.lagda.md), [Recording](https://iu.mediaspace.kaltura.com/media/Lecture+April+15A+Scott+Numerals+continuedB+Unification/1_s9t5bm7r)  |
-|          | 28  | [Unification](./Unification.lagda.md) continued, [Recording](https://iu.mediaspace.kaltura.com/media/Lecture+April+20A+Unification+continued/1_s965cxmw) |
+|          |  9  | System F, Proof of Parametricity |
+|          | 14  | [Denotational](https://plfa.github.io/Denotational/) semantics of the Lambda Calculus, [Recording](https://iu.mediaspace.kaltura.com/media/Lecture+March+30%2C+Denotational+Semantics/1_da4xq013)  |
+|          | 16  | [Compositional](https://plfa.github.io/Compositional/)  |
+|          | 21  | [Soundness](https://plfa.github.io/Soundness/), [Recording](https://iu.mediaspace.kaltura.com/media/Lecture+April+6%2C+Soundness+of+reduction+with+respect+to+denotational+semantics/1_o5gwttt7) |
+|          | 23  | [Adequacy](https://plfa.github.io/Adequacy/), [Recording](https://iu.mediaspace.kaltura.com/media/Lecture+April+8%2C+Adequacy+of+Denotational+Semantics+with+respect+to+Operational+Semantics/1_1eoqorgy) |
+|          | 28  | [Unification](./Unification.lagda.md), [Recording](https://iu.mediaspace.kaltura.com/media/Lecture+April+15A+Scott+Numerals+continuedB+Unification/1_s9t5bm7r)  |
 |          | 30  | [TypeInference](./TypeInference.lagda.md), [Recording](https://iu.mediaspace.kaltura.com/media/Lecture+April+22A+Type+Inference/1_dzkr4hhs) |
 
